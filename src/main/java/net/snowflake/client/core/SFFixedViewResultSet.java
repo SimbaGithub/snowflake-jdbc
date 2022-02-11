@@ -67,8 +67,8 @@ public class SFFixedViewResultSet extends SFJsonResultSet {
       nextRowList = fixedView.getNextRow();
     } catch (Exception ex) {
       throw new SFException(
-                  ErrorCode.INTERNAL_ERROR,
-                  IncidentUtil.oneLiner("Error getting next row from " + "fixed view:", ex));
+          ErrorCode.INTERNAL_ERROR,
+          IncidentUtil.oneLiner("Error getting next row from " + "fixed view:", ex));
     }
 
     row++;

@@ -8,7 +8,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.TimeZone;
 import net.snowflake.client.core.DataConversionContext;
-import net.snowflake.client.core.IncidentUtil;
 import net.snowflake.client.core.ResultUtil;
 import net.snowflake.client.core.SFException;
 import net.snowflake.client.jdbc.ErrorCode;

@@ -491,7 +491,8 @@ public class ResultUtil {
     List<SFStatementType> types = getResultTypes(result);
 
     if (ids.size() != types.size()) {
-      throw new SFException(ErrorCode.CHILD_RESULT_IDS_AND_TYPES_DIFFERENT_SIZES, ids.size(), types.size());
+      throw new SFException(
+          ErrorCode.CHILD_RESULT_IDS_AND_TYPES_DIFFERENT_SIZES, ids.size(), types.size());
     }
 
     List<SFChildResult> res = new ArrayList<>();

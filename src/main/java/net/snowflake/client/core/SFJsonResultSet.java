@@ -332,7 +332,8 @@ public abstract class SFJsonResultSet extends SFBaseResultSet {
     } catch (NumberFormatException nfe) {
 
       if (Types.INTEGER == columnType || Types.SMALLINT == columnType) {
-        throw new SFException(ErrorCode.INTERNAL_ERROR, SnowflakeUtil.LONG_STR + ": " + obj.toString());
+        throw new SFException(
+            ErrorCode.INTERNAL_ERROR, SnowflakeUtil.LONG_STR + ": " + obj.toString());
       } else {
         throw new SFException(
             ErrorCode.INVALID_VALUE_CONVERT, columnType, SnowflakeUtil.LONG_STR, obj);

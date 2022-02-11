@@ -246,7 +246,8 @@ public class SFStatement extends SFBaseStatement {
       // SNOW-22813 log exception
       logger.error("Exception creating result", ex);
 
-      throw new SFException(ErrorCode.INTERNAL_ERROR, IncidentUtil.oneLiner("exception creating result", ex));
+      throw new SFException(
+          ErrorCode.INTERNAL_ERROR, IncidentUtil.oneLiner("exception creating result", ex));
     }
     logger.debug("Done creating result set");
 
