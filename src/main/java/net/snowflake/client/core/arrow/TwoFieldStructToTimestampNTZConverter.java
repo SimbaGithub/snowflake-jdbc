@@ -44,12 +44,7 @@ public class TwoFieldStructToTimestampNTZConverter extends AbstractArrowVectorCo
   @Override
   public String toString(int index) throws SFException {
     if (context.getTimestampNTZFormatter() == null) {
-      throw (SFException)
-          IncidentUtil.generateIncidentV2WithException(
-              context.getSession(),
-              new SFException(ErrorCode.INTERNAL_ERROR, "missing timestamp NTZ formatter"),
-              null,
-              null);
+      throw new SFException(ErrorCode.INTERNAL_ERROR, "missing timestamp NTZ formatter");
     }
     try {
       Timestamp ts = epochs.isNull(index) ? null : getTimestamp(index, TimeZone.getDefault(), true);

@@ -102,12 +102,7 @@ public class DateConverter extends AbstractArrowVectorConverter {
   @Override
   public String toString(int index) throws SFException {
     if (context.getDateFormatter() == null) {
-      throw (SFException)
-          IncidentUtil.generateIncidentV2WithException(
-              context.getSession(),
-              new SFException(ErrorCode.INTERNAL_ERROR, "missing date formatter"),
-              null,
-              null);
+      throw new SFException(ErrorCode.INTERNAL_ERROR, "missing date formatter");
     }
     Date date = getDate(index, timeZoneUTC, false);
     return date == null ? null : ResultUtil.getDateAsString(date, context.getDateFormatter());

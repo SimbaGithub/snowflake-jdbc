@@ -39,12 +39,7 @@ public class TwoFieldStructToTimestampLTZConverter extends AbstractArrowVectorCo
   @Override
   public String toString(int index) throws SFException {
     if (context.getTimestampLTZFormatter() == null) {
-      throw (SFException)
-          IncidentUtil.generateIncidentV2WithException(
-              context.getSession(),
-              new SFException(ErrorCode.INTERNAL_ERROR, "missing timestamp LTZ formatter"),
-              null,
-              null);
+      throw new SFException(ErrorCode.INTERNAL_ERROR, "missing timestamp LTZ formatter");
     }
 
     try {

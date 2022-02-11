@@ -69,12 +69,7 @@ public class IntToTimeConverter extends AbstractArrowVectorConverter {
   @Override
   public String toString(int index) throws SFException {
     if (context.getTimeFormatter() == null) {
-      throw (SFException)
-          IncidentUtil.generateIncidentV2WithException(
-              context.getSession(),
-              new SFException(ErrorCode.INTERNAL_ERROR, "missing time formatter"),
-              null,
-              null);
+      throw new SFException(ErrorCode.INTERNAL_ERROR, "missing time formatter");
     }
     return isNull(index)
         ? null

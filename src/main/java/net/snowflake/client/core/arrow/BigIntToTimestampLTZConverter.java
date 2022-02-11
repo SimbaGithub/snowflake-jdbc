@@ -32,12 +32,7 @@ public class BigIntToTimestampLTZConverter extends AbstractArrowVectorConverter 
   @Override
   public String toString(int index) throws SFException {
     if (context.getTimestampLTZFormatter() == null) {
-      throw (SFException)
-          IncidentUtil.generateIncidentV2WithException(
-              context.getSession(),
-              new SFException(ErrorCode.INTERNAL_ERROR, "missing timestamp LTZ formatter"),
-              null,
-              null);
+      throw new SFException(ErrorCode.INTERNAL_ERROR, "missing timestamp LTZ formatter");
     }
     Timestamp ts = toTimestamp(index, TimeZone.getDefault());
 
