@@ -25,6 +25,16 @@ import org.junit.experimental.categories.Category;
  */
 @Category(TestCategoryOthers.class)
 public class DatabaseMetaDataLatestIT extends BaseJDBCTest {
+  private static final String TEST_PROC =
+      "create or replace procedure testproc(param1 float, param2 string)\n"
+          + "    returns varchar\n"
+          + "    language javascript\n"
+          + "    as\n"
+          + "    $$\n"
+          + "    var sql_command = \"Hello, world!\"\n"
+          + "    $$\n"
+          + "    ;";
+
   /**
    * Tests for getFunctions
    *
@@ -127,6 +137,74 @@ public class DatabaseMetaDataLatestIT extends BaseJDBCTest {
     }
   }
 
+  /**
+   * This tests the ability to have quotes inside a schema or database. This fixes a bug where
+   * double-quoted function arguments like schemas, databases, etc were returning empty resultsets.
+   *
+   * @throws SQLException
+   */
+  @Test
+  public void testDoubleQuotedDatabaseAndSchema() throws SQLException {
+    try (Connection con = getConnection()) {
+      Statement statement = con.createStatement();
+      String database = con.getCatalog();
+      // To query the schema and table, we can use a normal java escaped quote. Wildcards are also
+      // escaped here
+      String querySchema = "TEST\\_SCHEMA\\_\"WITH\\_QUOTES\"";
+      String queryTable = "TESTTABLE\\_\"WITH\\_QUOTES\"";
+      // Create the schema and table. With SQL commands, double quotes must be escaped with another
+      // quote
+      statement.execute("create or replace schema \"TEST_SCHEMA_\"\"WITH_QUOTES\"\"\"");
+      statement.execute(
+          "create or replace table \"TESTTABLE_\"\"WITH_QUOTES\"\"\" (AMOUNT number,"
+              + " \"COL_\"\"QUOTED\"\"\" string)");
+      DatabaseMetaData metaData = con.getMetaData();
+      ResultSet rs = metaData.getTables(database, querySchema, queryTable, null);
+      // Assert 1 row returned for the testtable_"with_quotes"
+      assertEquals(1, getSizeOfResultSet(rs));
+      rs = metaData.getColumns(database, querySchema, queryTable, null);
+      // Assert 2 rows returned for the 2 rows in testtable_"with_quotes"
+      assertEquals(2, getSizeOfResultSet(rs));
+      rs = metaData.getColumns(database, querySchema, queryTable, "COL\\_\"QUOTED\"");
+      // Assert 1 row returned for the column col_"quoted"
+      assertEquals(1, getSizeOfResultSet(rs));
+      rs = metaData.getSchemas(database, querySchema);
+      // Assert 1 row returned for the schema test_schema_"with_quotes"
+      assertEquals(1, getSizeOfResultSet(rs));
+      rs.close();
+      statement.close();
+    }
+  }
+
+  /**
+   * This tests that wildcards can be used for the schema name for getProcedureColumns().
+   * Previously, only empty resultsets were returned.
+   *
+   * @throws SQLException
+   */
+  @Test
+  public void testGetProcedureColumnsWildcards() throws SQLException {
+    try (Connection con = getConnection()) {
+      Statement statement = con.createStatement();
+      String database = con.getCatalog();
+      String schema1 = "SCH1";
+      String schema2 = "SCH2";
+      // Create 2 schemas, each with the same stored procedure declared in them
+      statement.execute("create or replace schema " + schema1);
+      statement.execute(TEST_PROC);
+      statement.execute("create or replace schema " + schema2);
+      statement.execute(TEST_PROC);
+      DatabaseMetaData metaData = con.getMetaData();
+      ResultSet rs = metaData.getProcedureColumns(database, "SCH_", "TESTPROC", "PARAM1");
+      // Assert 4 rows returned for the param PARAM1 that's present in each of the 2 identical
+      // stored procs in different schemas. A result row is returned for each procedure, making the
+      // total rowcount 4
+      assertEquals(4, getSizeOfResultSet(rs));
+      rs.close();
+      statement.close();
+    }
+  }
+
   @Test
   public void testGetFunctions() throws SQLException {
     try (Connection connection = getConnection()) {
@@ -163,8 +241,9 @@ public class DatabaseMetaDataLatestIT extends BaseJDBCTest {
         .execute(
             "create or replace table "
                 + targetTable
-                + "(C1 string, C2 string default '', C3 string default 'apples', C4 string default '\"apples\"', C5 int, C6 "
-                + "int default 5, C7 string default '''', C8 string default '''apples''''', C9  string default '%')");
+                + "(C1 string, C2 string default '', C3 string default 'apples', C4 string default"
+                + " '\"apples\"', C5 int, C6 int default 5, C7 string default '''', C8 string"
+                + " default '''apples''''', C9  string default '%')");
 
     DatabaseMetaData metaData = connection.getMetaData();
 
@@ -201,9 +280,9 @@ public class DatabaseMetaDataLatestIT extends BaseJDBCTest {
           .execute(
               "create or replace table "
                   + targetTable
-                  + "(C1 int, C2 varchar(100), C3 string default '', C4 number(18,4), C5 double, C6 boolean, "
-                  + "C7 date not null, C8 time, C9 timestamp_ntz(7), C10 binary,"
-                  + "C11 variant, C12 timestamp_ltz(8), C13 timestamp_tz(3))");
+                  + "(C1 int, C2 varchar(100), C3 string default '', C4 number(18,4), C5 double,"
+                  + " C6 boolean, C7 date not null, C8 time, C9 timestamp_ntz(7), C10 binary,C11"
+                  + " variant, C12 timestamp_ltz(8), C13 timestamp_tz(3))");
 
       DatabaseMetaData metaData = connection.getMetaData();
 
@@ -407,11 +486,10 @@ public class DatabaseMetaDataLatestIT extends BaseJDBCTest {
       connection
           .createStatement()
           .execute(
-              "create or replace function FUNC112 "
-                  + "() RETURNS TABLE(colA string, colB decimal, bin2 binary, sharedCol decimal) COMMENT= 'returns "
-                  + "table of 4 columns' as 'select JDBC_TBL111.colA, JDBC_TBL111.colB, "
-                  + "BIN_TABLE.bin2, BIN_TABLE.sharedCol from JDBC_TBL111 inner join BIN_TABLE on JDBC_TBL111"
-                  + ".colB =BIN_TABLE.sharedCol'");
+              "create or replace function FUNC112 () RETURNS TABLE(colA string, colB decimal, bin2"
+                  + " binary, sharedCol decimal) COMMENT= 'returns table of 4 columns' as 'select"
+                  + " JDBC_TBL111.colA, JDBC_TBL111.colB, BIN_TABLE.bin2, BIN_TABLE.sharedCol from"
+                  + " JDBC_TBL111 inner join BIN_TABLE on JDBC_TBL111.colB =BIN_TABLE.sharedCol'");
       DatabaseMetaData metaData = connection.getMetaData();
       /* Call getFunctionColumns on FUNC111 and since there's no parameter name, get all rows back */
       ResultSet resultSet = metaData.getFunctionColumns(database, schema, "FUNC111", "%");

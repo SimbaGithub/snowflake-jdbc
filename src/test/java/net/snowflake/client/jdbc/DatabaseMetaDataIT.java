@@ -255,9 +255,9 @@ public class DatabaseMetaDataIT extends BaseJDBCTest {
           .execute(
               "create or replace table "
                   + targetTable
-                  + "(C1 int, C2 varchar(100), C3 string default '', C4 number(18,4), C5 double, C6 boolean, "
-                  + "C7 date not null, C8 time, C9 timestamp_ntz(7), C10 binary,"
-                  + "C11 variant, C12 timestamp_ltz(8), C13 timestamp_tz(3))");
+                  + "(C1 int, C2 varchar(100), C3 string default '', C4 number(18,4), C5 double,"
+                  + " C6 boolean, C7 date not null, C8 time, C9 timestamp_ntz(7), C10 binary,C11"
+                  + " variant, C12 timestamp_ltz(8), C13 timestamp_tz(3))");
 
       DatabaseMetaData metaData = connection.getMetaData();
 
@@ -595,8 +595,9 @@ public class DatabaseMetaDataIT extends BaseJDBCTest {
           .execute(
               "create or replace table "
                   + targetTable
-                  + "(C1 string, C2 string default '', C3 string default 'apples', C4 string default '\"apples\"', C5 int, C6 "
-                  + "int default 5, C7 string default '''', C8 string default '''apples''''', C9  string default '%')");
+                  + "(C1 string, C2 string default '', C3 string default 'apples', C4 string"
+                  + " default '\"apples\"', C5 int, C6 int default 5, C7 string default '''', C8"
+                  + " string default '''apples''''', C9  string default '%')");
 
       metaData = connection.getMetaData();
 
@@ -1133,7 +1134,7 @@ public class DatabaseMetaDataIT extends BaseJDBCTest {
       assertFalse(resultSet.next());
       /* Call getProcedureColumns with specified procedure name and column name. This will return 2 rows: 1 for the
       result values of the procedure, and 1 for the parameter values for the specified parameter. */
-      resultSet = metaData.getProcedureColumns(null, null, "stproc1", "param2");
+      resultSet = metaData.getProcedureColumns(null, null, "STPROC1", "PARAM2");
       assertEquals(20, resultSet.getMetaData().getColumnCount());
       assertEquals(2, getSizeOfResultSet(resultSet));
       connection.createStatement().execute("drop procedure if exists stproc1(float, string)");
