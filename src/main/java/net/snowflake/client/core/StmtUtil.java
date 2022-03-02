@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2019 Snowflake Computing Inc. All rights reserved.
+ * Copyright (c) 2012-2022 Snowflake Computing Inc. All rights reserved.
  */
 
 package net.snowflake.client.core;
@@ -83,6 +83,7 @@ public class StmtUtil {
     int networkTimeoutInMillis;
     int injectSocketTimeout; // seconds
     int injectClientPause; // seconds
+    int authTimeout; // seconds
 
     AtomicBoolean canceling = null; // canceling flag
     boolean retry;
@@ -216,6 +217,11 @@ public class StmtUtil {
       this.asyncExec = async;
       return this;
     }
+
+    public StmtInput setAuthTimeout(int authTimeout) {
+      this.authTimeout = authTimeout;
+      return this;
+    }
   }
 
   /** Output for running a statement on server */
@@ -335,6 +341,8 @@ public class StmtUtil {
             HttpUtil.executeRequest(
                 httpRequest,
                 stmtInput.networkTimeoutInMillis / 1000,
+                stmtInput.authTimeout,
+                0,
                 stmtInput.injectSocketTimeout,
                 stmtInput.canceling,
                 true, // include retry parameters
@@ -573,6 +581,8 @@ public class StmtUtil {
       return HttpUtil.executeRequest(
           httpRequest,
           stmtInput.networkTimeoutInMillis / 1000,
+          stmtInput.authTimeout,
+          0,
           0,
           stmtInput.canceling,
           false, // no retry parameter
@@ -605,6 +615,7 @@ public class StmtUtil {
             .setServerUrl(session.getServerUrl())
             .setSessionToken(session.getSessionToken())
             .setNetworkTimeoutInMillis(session.getNetworkTimeoutInMilli())
+            .setAuthTimeout(session.getAuthTimeout())
             .setMediaType(SF_MEDIA_TYPE)
             .setServiceName(session.getServiceName())
             .setOCSPMode(session.getOCSPMode())
@@ -685,6 +696,8 @@ public class StmtUtil {
           HttpUtil.executeRequest(
               httpRequest,
               SF_CANCELING_RETRY_TIMEOUT_IN_MILLIS,
+              stmtInput.authTimeout,
+              0,
               0,
               null,
               false, // no retry parameter

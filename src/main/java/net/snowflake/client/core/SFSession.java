@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2019 Snowflake Computing Inc. All rights reserved.
+ * Copyright (c) 2012-2022 Snowflake Computing Inc. All rights reserved.
  */
 
 package net.snowflake.client.core;
@@ -79,6 +79,8 @@ public class SFSession extends SFBaseSession {
    * <p>Default: 0
    */
   private int networkTimeoutInMilli = 0; // in milliseconds
+
+  private int authTimeout = 0;
 
   private boolean enableCombineDescribe = false;
   private int httpClientConnectionTimeout = 60000; // milliseconds
@@ -166,7 +168,8 @@ public class SFSession extends SFBaseSession {
       try {
         get.setHeader("Content-type", "application/json");
         get.setHeader("Authorization", "Snowflake Token=\"" + this.sessionToken + "\"");
-        response = HttpUtil.executeGeneralRequest(get, loginTimeout, getHttpClientKey());
+        response =
+            HttpUtil.executeGeneralRequest(get, loginTimeout, authTimeout, 0, getHttpClientKey());
         jsonNode = OBJECT_MAPPER.readTree(response);
       } catch (Exception e) {
         throw new SnowflakeSQLLoggedException(
@@ -431,6 +434,7 @@ public class SFSession extends SFBaseSession {
         .setOKTAUserName((String) connectionPropertiesMap.get(SFSessionProperty.OKTA_USERNAME))
         .setAccountName((String) connectionPropertiesMap.get(SFSessionProperty.ACCOUNT))
         .setLoginTimeout(loginTimeout)
+        .setAuthTimeout(authTimeout)
         .setUserName((String) connectionPropertiesMap.get(SFSessionProperty.USER))
         .setPassword((String) connectionPropertiesMap.get(SFSessionProperty.PASSWORD))
         .setToken((String) connectionPropertiesMap.get(SFSessionProperty.TOKEN))
@@ -456,6 +460,7 @@ public class SFSession extends SFBaseSession {
         SessionUtil.openSession(loginInput, connectionPropertiesMap, tracingLevel.toString());
     isClosed = false;
 
+    authTimeout = loginInput.getAuthTimeout();
     sessionToken = loginOutput.getSessionToken();
     masterToken = loginOutput.getMasterToken();
     idToken = loginOutput.getIdToken();
@@ -715,7 +720,8 @@ public class SFSession extends SFBaseSession {
         // per https://support-snowflake.zendesk.com/agent/tickets/6629
         int SF_HEARTBEAT_TIMEOUT = 300;
         String theResponse =
-            HttpUtil.executeGeneralRequest(postRequest, SF_HEARTBEAT_TIMEOUT, getHttpClientKey());
+            HttpUtil.executeGeneralRequest(
+                postRequest, SF_HEARTBEAT_TIMEOUT, authTimeout, 0, getHttpClientKey());
 
         JsonNode rootNode;
 
@@ -774,6 +780,10 @@ public class SFSession extends SFBaseSession {
       } catch (InterruptedException ex) {
       }
     }
+  }
+
+  public int getAuthTimeout() {
+    return authTimeout;
   }
 
   public int getInjectSocketTimeout() {

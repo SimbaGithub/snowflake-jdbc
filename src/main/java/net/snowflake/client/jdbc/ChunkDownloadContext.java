@@ -35,6 +35,10 @@ public class ChunkDownloadContext {
     return networkTimeoutInMilli;
   }
 
+  public int getAuthTimeout() {
+    return authTimeout;
+  }
+
   public SFBaseSession getSession() {
     return session;
   }
@@ -45,6 +49,7 @@ public class ChunkDownloadContext {
   private final Map<String, String> chunkHeadersMap;
   private final int networkTimeoutInMilli;
   private final SFBaseSession session;
+  private final int authTimeout;
 
   public ChunkDownloadContext(
       SnowflakeChunkDownloader chunkDownloader,
@@ -53,6 +58,7 @@ public class ChunkDownloadContext {
       int chunkIndex,
       Map<String, String> chunkHeadersMap,
       int networkTimeoutInMilli,
+      int authTimeout,
       SFBaseSession session) {
     this.chunkDownloader = chunkDownloader;
     this.resultChunk = resultChunk;
@@ -60,6 +66,7 @@ public class ChunkDownloadContext {
     this.chunkIndex = chunkIndex;
     this.chunkHeadersMap = chunkHeadersMap;
     this.networkTimeoutInMilli = networkTimeoutInMilli;
+    this.authTimeout = authTimeout;
     this.session = session;
   }
 }

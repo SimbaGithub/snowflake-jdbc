@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2019 Snowflake Computing Inc. All rights reserved.
+ * Copyright (c) 2012-2022 Snowflake Computing Inc. All rights reserved.
  */
 
 package net.snowflake.client.jdbc;
@@ -119,6 +119,7 @@ public class SnowflakeResultSetSerializableV1
   int resultSetType;
   int resultSetConcurrency;
   int resultSetHoldability;
+  int authTimeout;
 
   // Below are some metadata fields parsed from the result JSON node
   String queryId;
@@ -194,6 +195,7 @@ public class SnowflakeResultSetSerializableV1
     this.treatNTZAsUTC = toCopy.treatNTZAsUTC;
     this.formatDateWithTimezone = toCopy.formatDateWithTimezone;
     this.useSessionTimezone = toCopy.useSessionTimezone;
+    this.authTimeout = toCopy.authTimeout;
 
     // Below are some metadata fields parsed from the result JSON node
     this.queryId = toCopy.queryId;
@@ -295,6 +297,10 @@ public class SnowflakeResultSetSerializableV1
 
   public int getNetworkTimeoutInMilli() {
     return networkTimeoutInMilli;
+  }
+
+  public int getAuthTimeout() {
+    return authTimeout;
   }
 
   public int getResultPrefetchThreads() {
@@ -616,6 +622,7 @@ public class SnowflakeResultSetSerializableV1
     resultSetSerializable.httpClientKey = sfSession.getHttpClientKey();
     resultSetSerializable.snowflakeConnectionString = sfSession.getSnowflakeConnectionString();
     resultSetSerializable.networkTimeoutInMilli = sfSession.getNetworkTimeoutInMilli();
+    resultSetSerializable.authTimeout = sfSession.getAuthTimeout();
     resultSetSerializable.isResultColumnCaseInsensitive = sfSession.isResultColumnCaseInsensitive();
     resultSetSerializable.treatNTZAsUTC = sfSession.getTreatNTZAsUTC();
     resultSetSerializable.formatDateWithTimezone = sfSession.getFormatDateWithTimezone();

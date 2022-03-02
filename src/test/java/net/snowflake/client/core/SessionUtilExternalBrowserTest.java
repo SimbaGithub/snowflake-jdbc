@@ -137,6 +137,8 @@ public class SessionUtilExternalBrowserTest {
                   HttpUtil.executeGeneralRequest(
                       Mockito.any(HttpRequestBase.class),
                       Mockito.anyInt(),
+                      Mockito.anyInt(),
+                      Mockito.anyInt(),
                       Mockito.nullable(HttpClientSettingsKey.class)))
           .thenReturn(
               "{\"success\":\"true\",\"data\":{\"proofKey\":\""
@@ -172,6 +174,8 @@ public class SessionUtilExternalBrowserTest {
               () ->
                   HttpUtil.executeGeneralRequest(
                       Mockito.any(HttpRequestBase.class),
+                      Mockito.anyInt(),
+                      Mockito.anyInt(),
                       Mockito.anyInt(),
                       Mockito.nullable(HttpClientSettingsKey.class)))
           .thenReturn("{\"success\":\"false\",\"code\":\"123456\",\"message\":\"errormes\"}");

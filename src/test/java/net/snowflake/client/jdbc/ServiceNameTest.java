@@ -99,6 +99,8 @@ public class ServiceNameTest {
                   HttpUtil.executeGeneralRequest(
                       Mockito.any(HttpRequestBase.class),
                       Mockito.anyInt(),
+                      Mockito.anyInt(),
+                      Mockito.anyInt(),
                       Mockito.any(HttpClientSettingsKey.class)))
           .thenReturn(responseLogin());
       mockedHttpUtil
@@ -106,6 +108,8 @@ public class ServiceNameTest {
               () ->
                   HttpUtil.executeRequest(
                       Mockito.any(HttpRequestBase.class),
+                      Mockito.anyInt(),
+                      Mockito.anyInt(),
                       Mockito.anyInt(),
                       Mockito.anyInt(),
                       Mockito.any(AtomicBoolean.class),

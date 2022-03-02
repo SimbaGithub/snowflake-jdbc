@@ -232,6 +232,8 @@ public class Incident extends Event {
           HttpUtil.executeGeneralRequest(
               postRequest,
               1000,
+              0,
+              0,
               ocspAndProxyKey != null
                   ? ocspAndProxyKey
                   : new HttpClientSettingsKey(OCSPMode.FAIL_OPEN));
