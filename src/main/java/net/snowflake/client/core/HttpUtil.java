@@ -582,11 +582,13 @@ public class HttpUtil {
    * @throws IOException raises if a general IO error occurs
    */
   public static String executeGeneralRequest(
-      HttpRequestBase httpRequest, int retryTimeout, CloseableHttpClient httpClient)
+      HttpRequestBase httpRequest, int retryTimeout, int authTimeout,  int retryCount, CloseableHttpClient httpClient)
       throws SnowflakeSQLException, IOException {
     return executeRequestInternal(
         httpRequest,
         retryTimeout,
+        authTimeout,
+        retryCount,
         0, // no inject socket timeout
         null, // no canceling
         false, // with cookie
